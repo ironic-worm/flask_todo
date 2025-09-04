@@ -1,0 +1,31 @@
+[project]
+name = "flask_todo"
+version = "0.1.0"
+authors = [{name = "Yakov Shepelev",email = "yasha.shepeleff@gmail.com"}]
+readme = "README.md"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.14"
+flask = ">=3.1.2,<4.0.0"
+flask-sqlalchemy = ">=3.1.1,<4.0.0"
+psycopg2 = ">=2.9.10,<3.0.0"
+psycopg2-binary = ">=2.9.10,<3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.0"
+isort = "^5.13.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 88

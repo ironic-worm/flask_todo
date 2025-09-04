@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Todo List</title>
+
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+            background: #0b0d10;
+            color: #e6e7e9
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px
+        }
+
+        h1 {
+            margin: 0 0 12px 0
+        }
+
+        .card {
+            background: #12161b;
+            border: 1px solid #1f252d;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px
+        }
+
+        label span {
+            display: block;
+            font-size: .9rem;
+            margin-bottom: 6px;
+            opacity: .8
+        }
+
+        input[type=text], textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #2a313b;
+            background: #0e1216;
+            color: #e6e7e9
+        }
+
+        textarea {
+            resize: vertical
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            gap: 12px
+        }
+
+        .full {
+            grid-column: 1/-1
+        }
+
+        .actions {
+            grid-column: 1/-1;
+            text-align: right
+        }
+
+        button {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #3a4350;
+            background: #1a222b;
+            color: #e6e7e9;
+            cursor: pointer
+        }
+
+        button:hover {
+            background: #223042
+        }
+
+        .button-error {
+            background: #ca3c3c;
+            border-color: #a43333
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #12161b;
+            border: 1px solid #1f252d;
+            border-radius: 12px;
+            overflow: hidden
+        }
+
+        thead th {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #1f252d
+        }
+
+        tbody td {
+            padding: 10px;
+            border-top: 1px solid #1f252d;
+            vertical-align: top
+        }
+
+        .status {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .inline {
+            display: inline
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>ToDo</h1>
+    <section class="card">
+        <form id="todo_form" class="grid" action="{{ url_for('add') }}" method="post">
+            <label>
+                <span>Название</span>
+                <input id="task" name="task" type="text" placeholder="Describe task here" autofocus required>
+            </label>
+            <label class="full">
+                <span>Детали</span>
+                <textarea id="details" name="details" rows="3" placeholder="Необязательно"></textarea>
+            </label>
+            <div class="actions">
+                <button type="submit">Добавить</button>
+            </div>
+        </form>
+    </section>
+
+    <table>
+        <thead>
+        <tr>
+            <th width="5%">Id</th>
+            <th>Description</th>
+            <th width="25%">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for task in tasks%}
+        <tr>
+            <td>{{ task.id }}</td>
+            <td>
+                <div>{{ task.text }}</div>
+                {% if task.details %}
+                <details>
+                    <summary>Сведения</summary>
+                    <div>{{ task.details }}</div>
+                </details>
+                {% endif %}
+                {% if not task.is_done and task.created_at %}
+                <div>Создана: {{ task.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+                {% endif %}
+                {% if task.is_done and task.completed_at %}
+                <div>Завершена: {{ task.completed_at.strftime("%Y-%m-%d %H:%M") }}</div>
+                {% endif %}
+            </td>
+            <td>
+                <div class="status">
+                    {% if task.is_done %}
+                    <span>Complete</span>
+                    <form class="inline" method="post" action="{{ url_for('reopen', task_id=task.id) }}">
+                        <button type="submit">Reopen</button>
+                    </form>
+                    {% else %}
+                    <span>In Progress</span>
+                    <form class="inline" method="post" action="{{ url_for('done', task_id=task.id) }}">
+                        <button type="submit">Complete</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <form action="{{ url_for('clear') }}" method="post">
+        <button type="submit" class="button-error">clear</button>
+    </form>
+    <br><br><br>
+</div>
+</body>
+</html>
